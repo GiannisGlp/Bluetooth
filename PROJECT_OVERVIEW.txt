@@ -1,0 +1,100 @@
+=================================================================
+         BLUETOOTH REACT NATIVE APP - PROJECT OVERVIEW
+=================================================================
+
+PROJECT TYPE: React Native mobile app with Expo
+PURPOSE: Bluetooth Low Energy (BLE) device scanner and connector
+
+-----------------------------------------------------------------
+KEY FEATURES
+-----------------------------------------------------------------
+✓ Real-time BLE device scanning
+✓ Device connection and disconnection
+✓ Permission handling (iOS & Android)
+✓ Modern, responsive UI
+✓ TypeScript for type safety
+✓ Cross-platform support
+
+-----------------------------------------------------------------
+TECHNICAL STACK
+-----------------------------------------------------------------
+• React Native 0.81.5
+• Expo SDK 54
+• TypeScript 5.9.2
+• react-native-ble-plx 3.5.0 (BLE library)
+• expo-device 8.0.9 (device info)
+
+-----------------------------------------------------------------
+PROJECT STRUCTURE
+-----------------------------------------------------------------
+/
+├── App.tsx              - Main application component
+├── app.json            - Expo configuration & permissions
+├── package.json        - Dependencies and scripts
+├── tsconfig.json       - TypeScript configuration
+├── index.ts            - Entry point
+├── README.md           - Complete documentation
+├── QUICKSTART.md       - 5-minute setup guide
+├── BLUETOOTH_API.md    - Developer API guide
+├── .gitignore          - Git ignore rules
+└── assets/             - App icons and images
+
+-----------------------------------------------------------------
+HOW TO USE
+-----------------------------------------------------------------
+1. Install:     npm install
+2. Start:       npm start
+3. Run:         Scan QR code with Expo Go app
+4. Test:        Enable Bluetooth and tap "Start Scan"
+
+-----------------------------------------------------------------
+PERMISSIONS CONFIGURED
+-----------------------------------------------------------------
+Android:
+  • BLUETOOTH, BLUETOOTH_ADMIN
+  • BLUETOOTH_SCAN, BLUETOOTH_CONNECT (API 31+)
+  • ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
+
+iOS:
+  • NSBluetoothAlwaysUsageDescription
+  • NSBluetoothPeripheralUsageDescription
+
+-----------------------------------------------------------------
+CODE QUALITY
+-----------------------------------------------------------------
+✓ TypeScript: Zero errors
+✓ Security: No vulnerabilities (CodeQL verified)
+✓ Architecture: Proper lifecycle management with useRef
+✓ Constants: Extracted magic numbers
+✓ Error Handling: Comprehensive try-catch blocks
+✓ Documentation: Inline comments and guides
+
+-----------------------------------------------------------------
+TESTING STATUS
+-----------------------------------------------------------------
+• TypeScript compilation: ✓ PASSED
+• Code review: ✓ PASSED (all feedback addressed)
+• Security scan (CodeQL): ✓ PASSED (0 alerts)
+• Runtime testing: ⚠️ REQUIRES PHYSICAL DEVICE
+
+Note: Bluetooth functionality requires a real iOS or Android
+device. Simulators/emulators have limited BLE support.
+
+-----------------------------------------------------------------
+NEXT STEPS
+-----------------------------------------------------------------
+1. Run on physical device with Expo Go
+2. Test scanning for nearby BLE devices
+3. Test connection to a device
+4. Extend with custom service/characteristic operations
+5. Build standalone app for production
+
+-----------------------------------------------------------------
+RESOURCES
+-----------------------------------------------------------------
+• Full docs: README.md
+• Quick start: QUICKSTART.md
+• API guide: BLUETOOTH_API.md
+• Library docs: github.com/dotintent/react-native-ble-plx
+
+=================================================================
