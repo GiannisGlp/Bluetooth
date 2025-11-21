@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet,
@@ -13,17 +13,24 @@ import {
 import { BleManager, Device, State } from 'react-native-ble-plx';
 import * as ExpoDevice from 'expo-device';
 
-const bleManager = new BleManager();
+// Constants
+const SCAN_TIMEOUT_MS = 10000;
 
 export default function App() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [connectedDevice, setConnectedDevice] = useState<Device | null>(null);
   const [bluetoothState, setBluetoothState] = useState<State>(State.Unknown);
+  
+  // Use ref to manage BleManager lifecycle properly
+  const bleManagerRef = useRef<BleManager | null>(null);
 
   useEffect(() => {
+    // Initialize BleManager
+    bleManagerRef.current = new BleManager();
+    
     // Subscribe to Bluetooth state changes
-    const subscription = bleManager.onStateChange((state) => {
+    const subscription = bleManagerRef.current.onStateChange((state) => {
       setBluetoothState(state);
       if (state === State.PoweredOn) {
         console.log('Bluetooth is powered on');
@@ -32,7 +39,9 @@ export default function App() {
 
     return () => {
       subscription.remove();
-      bleManager.destroy();
+      if (bleManagerRef.current) {
+        bleManagerRef.current.destroy();
+      }
     };
   }, []);
 
@@ -91,6 +100,8 @@ export default function App() {
   };
 
   const scanForDevices = async () => {
+    if (!bleManagerRef.current) return;
+    
     const isPermissionsEnabled = await requestPermissions();
     if (!isPermissionsEnabled) {
       Alert.alert('Permissions Required', 'Please enable Bluetooth permissions');
@@ -105,7 +116,9 @@ export default function App() {
     setIsScanning(true);
     setDevices([]);
 
-    bleManager.startDeviceScan(null, null, (error, device) => {
+    // Scan for all BLE devices
+    // Note: For production, consider filtering by specific service UUIDs to improve performance
+    bleManagerRef.current.startDeviceScan(null, null, (error, device) => {
       if (error) {
         console.error('Scan error:', error);
         setIsScanning(false);
@@ -123,22 +136,28 @@ export default function App() {
       }
     });
 
-    // Stop scanning after 10 seconds
+    // Stop scanning after defined timeout
     setTimeout(() => {
-      bleManager.stopDeviceScan();
+      if (bleManagerRef.current) {
+        bleManagerRef.current.stopDeviceScan();
+      }
       setIsScanning(false);
-    }, 10000);
+    }, SCAN_TIMEOUT_MS);
   };
 
   const stopScan = () => {
-    bleManager.stopDeviceScan();
+    if (bleManagerRef.current) {
+      bleManagerRef.current.stopDeviceScan();
+    }
     setIsScanning(false);
   };
 
   const connectToDevice = async (device: Device) => {
+    if (!bleManagerRef.current) return;
+    
     try {
       stopScan();
-      const connected = await bleManager.connectToDevice(device.id);
+      const connected = await bleManagerRef.current.connectToDevice(device.id);
       setConnectedDevice(connected);
       await connected.discoverAllServicesAndCharacteristics();
       Alert.alert('Success', `Connected to ${device.name || 'Unknown Device'}`);
@@ -149,14 +168,14 @@ export default function App() {
   };
 
   const disconnectDevice = async () => {
-    if (connectedDevice) {
-      try {
-        await bleManager.cancelDeviceConnection(connectedDevice.id);
-        setConnectedDevice(null);
-        Alert.alert('Disconnected', 'Device disconnected successfully');
-      } catch (error) {
-        console.error('Disconnect error:', error);
-      }
+    if (!bleManagerRef.current || !connectedDevice) return;
+    
+    try {
+      await bleManagerRef.current.cancelDeviceConnection(connectedDevice.id);
+      setConnectedDevice(null);
+      Alert.alert('Disconnected', 'Device disconnected successfully');
+    } catch (error) {
+      console.error('Disconnect error:', error);
     }
   };
 
